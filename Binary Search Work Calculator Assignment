@@ -1,0 +1,102 @@
+
+#  File: Work.py
+
+#  Description: This program calculates the number of lines one should code for
+#               before the first coffee break in order to finish all the lines
+#               required using the number of lines and the productivity
+#               measured in k.
+
+#  Student Name: Peter Zhang
+
+#  Student UT EID: pxz58
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 2/19/2022
+
+#  Date Last Modified: 2/21/2022
+
+import sys, time
+
+
+# This function calculates how many lines will be written before 0 more lines
+# can be written.
+# Input: v is the number of lines written before the first coffee break, and
+# k is the productivity factor.
+# Output: tot is the total number of lines written.
+def calculate_lines_until_0(v, k):
+    tot = int(v)
+    loops = v
+    while loops > 0:
+        loops //= k
+        tot += loops
+
+    return tot
+
+
+# Input: int n, the number of lines of code to write
+#        int k, the productivity factor
+# Output: the number of lines of code that must be
+#         written before the first cup of coffee
+def linear_search(n: int, k: int) -> int:
+    # use linear search here
+    for i in range(1, n):
+        lines = calculate_lines_until_0(i, k)
+        if lines >= n:
+            return i
+
+    return n
+
+
+# Input: int n, the number of lines of code to write
+#        int k, the productivity factor
+# Output: the number of lines of code that must be
+#         written before the first cup of coffee
+def binary_search(n: int, k: int) -> int:
+    # use binary search here
+    lo = 1
+    hi = n
+    while lo <= hi:
+        search = lo + (hi - lo) // 2
+        lines = calculate_lines_until_0(search, k)
+
+        if lines >= n:
+            hi = search - 1
+        else:
+            lo = search + 1
+
+    return lo
+
+
+# main has been completed for you
+# do NOT change anything below this line
+def main():
+    num_cases = int((sys.stdin.readline()).strip())
+
+    for i in range(num_cases):
+        inp = (sys.stdin.readline()).split()
+        n = int(inp[0])
+        k = int(inp[1])
+
+        start = time.time()
+        print("Binary Search: " + str(binary_search(n, k)))
+        finish = time.time()
+        print("Time: " + str(finish - start))
+
+        print()
+
+        start = time.time()
+        print("Linear Search: " + str(linear_search(n, k)))
+        finish = time.time()
+        print("Time: " + str(finish - start))
+
+        print()
+        print()
+
+
+# The line above main is for grading purposes only.
+# DO NOT REMOVE THE LINE ABOVE MAIN
+if __name__ == "__main__":
+    main()
