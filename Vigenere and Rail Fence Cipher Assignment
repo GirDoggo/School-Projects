@@ -1,0 +1,258 @@
+#  File: TestCipher.py
+
+#  Description:
+
+#  Student's Name: Peter Zhang
+
+#  Student's UT EID: pxz58
+
+#  Partner's Name: N/A
+
+#  Partner's UT EID: N/A
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 2/3/2022
+
+#  Date Last Modified: 2/3/2002
+
+import sys
+
+#  Input: strng is a string of characters and key is a positive
+#         integer 2 or greater and strictly less than the length
+#         of strng
+#  Output: function returns a single string that is encoded with
+#          rail fence algorithm
+def rail_fence_encode(strng, key):
+    cipher = []
+    # Create a 2D list of '-'
+    for i in range(key):
+        line = []
+        for j in range(len(strng)):
+            line.append('-')
+        cipher.append(line)
+
+    # Alter the grid using the rail fence cipher
+    iteration = 0
+    read_up = False
+    for j in range(len(strng)):
+        if read_up == False:
+            cipher[iteration][j] = strng[j]
+            iteration += 1
+            if iteration == (key - 1):
+                read_up = True
+        else:
+            cipher[iteration][j] = strng[j]
+            iteration -= 1
+            if iteration == 0:
+                read_up = False
+
+    # Read the encoded text into a string
+    encoded_text = ''
+    for item in cipher:
+        for ele in item:
+            if ele != '-':
+                encoded_text += ele
+
+    return encoded_text
+
+
+#  Input: strng is a string of characters and key is a positive
+#         integer 2 or greater and strictly less than the length
+#         of strng
+#  Output: function returns a single string that is decoded with
+#          rail fence algorithm
+def rail_fence_decode(strng, key):
+    cipher = []
+    # Create a 2D list of '-'
+    for i in range(key):
+        line = []
+        for j in range(len(strng)):
+            line.append('-')
+        cipher.append(line)
+
+    # Find where the letters would be placed in the grid when using the cipher
+    iteration = 0
+    read_up = False
+    for j in range(len(strng)):
+        if read_up == False:
+            cipher[iteration][j] = 'o'
+            iteration += 1
+            if iteration == (key - 1):
+                read_up = True
+        else:
+            cipher[iteration][j] = 'o'
+            iteration -= 1
+            if iteration == 0:
+                read_up = False
+
+    # Replace the markings of where the letters should be in the correct order
+    iteration = 0
+    for j in range(key):
+        for i in range(len(strng)):
+            if cipher[j][i] == 'o':
+                cipher[j][i] = strng[iteration]
+                iteration += 1
+
+    # Read the decoded text into a string
+    iteration = 0
+    read_up = False
+    decoded_text = ''
+    for j in range(len(strng)):
+        if read_up == False:
+            decoded_text += cipher[iteration][j]
+            iteration += 1
+            if iteration == (key - 1):
+                read_up = True
+        else:
+            decoded_text += cipher[iteration][j]
+            iteration -= 1
+            if iteration == 0:
+                read_up = False
+
+    return decoded_text
+
+
+#  Input: strng is a string of characters
+#  Output: function converts all characters to lower case and then
+#          removes all digits, punctuation marks, and spaces. It
+#          returns a single string with only lower case characters
+def filter_string(strng):
+    strng = ''.join([d for d in strng if d.isalpha()])
+
+    return strng.lower()
+
+
+#  Input: p is a character in the pass phrase and s is a character
+#         in the plain text
+#  Output: function returns a single character encoded using the
+#          Vigenere algorithm. You may not use a 2-D list
+def encode_character(p, s):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    letter_index = alphabet.index(p) + alphabet.index(s)
+    if letter_index > 25:
+        letter_index -= 26
+    letter = alphabet[letter_index]
+
+    return letter
+
+
+#  Input: p is a character in the pass phrase and s is a character
+#         in the plain text
+#  Output: function returns a single character decoded using the
+#          Vigenere algorithm. You may not use a 2-D list
+def decode_character(p, s):
+    alphabet = 'abcdefghijklmnopqrstuvwxyz'
+    letter_index = alphabet.index(s) - alphabet.index(p)
+    if letter_index < 0:
+        letter_index += 26
+    letter = alphabet[letter_index]
+
+    return letter
+
+
+#  Input: strng is a string of characters and phrase is a pass phrase
+#  Output: function returns a single string that is encoded with
+#          Vigenere algorithm
+def vigenere_encode(strng, phrase):
+    pass_phrase = filter_string(phrase)
+    pass_line = make_pass_phrase(pass_phrase, strng)
+    filtered_strng = filter_string(strng)
+
+    vigenere = ''
+    for i in range(len(filtered_strng)):
+        vigenere += encode_character(pass_line[i], filtered_strng[i])
+    return vigenere
+
+
+#  Input: strng is a string of characters and phrase is a pass phrase
+#  Output: function returns a single string that is decoded with
+#          Vigenere algorithm
+def vigenere_decode(strng, phrase):
+    pass_phrase = filter_string(phrase)
+    pass_line = make_pass_phrase(pass_phrase, strng)
+    filtered_strng = filter_string(strng)
+
+    decode = ''
+    for i in range(len(filtered_strng)):
+        decode += decode_character(pass_line[i], filtered_strng[i])
+
+    return decode
+
+
+def make_pass_phrase(phrase, strng):
+    pass_line = ''
+    iteration = 0
+    while len(pass_line) < len(strng):
+        pass_line += phrase[iteration]
+        iteration += 1
+        if iteration == len(phrase):
+            iteration = 0
+
+    return pass_line
+
+
+def main():
+    # read the plain text from stdin
+    rail_fence = sys.stdin.readline().strip()
+
+    # read the key from stdin
+    key = int(sys.stdin.readline())
+
+    # encrypt and print the encoded text using rail fence cipher
+    encode = rail_fence_encode(rail_fence, key)
+    print('Rail Fence Cipher')
+    print()
+    print('Plain Text:', rail_fence)
+    print('Key:', key)
+    print('Encoded Text:', encode)
+    print()
+
+    # read encoded text from stdin
+    encoded_text = sys.stdin.readline().strip()
+
+    # read the key from stdin
+    key = int(sys.stdin.readline())
+
+    # decrypt and print the plain text using rail fence cipher
+    decode = rail_fence_decode(encoded_text, key)
+    print('Encoded Text:', encoded_text)
+    print('Key:', key)
+    print('Decoded Text:', decode)
+    print()
+
+    # read the plain text from stdin
+    vigenere = sys.stdin.readline()
+    vigenere = filter_string(vigenere)
+
+    # read the pass phrase from stdin
+    pass_phrase = sys.stdin.readline()
+
+    # encrypt and print the encoded text using Vigenere cipher
+    encode = vigenere_encode(vigenere, pass_phrase)
+    print('Vigenere Cipher')
+    print()
+    print('Plain Text:', vigenere.strip())
+    print('Pass Phrase:', pass_phrase.strip())
+    print('Encoded Text:', encode)
+    print()
+
+    # read the encoded text from stdin
+    encoded_text = sys.stdin.readline().strip()
+
+    # read the pass phrase from stdin
+    pass_phrase = sys.stdin.readline()
+
+    # decrypt and print the plain text using Vigenere cipher
+    decoded_text = vigenere_decode(encoded_text, pass_phrase)
+    print('Encoded Text:', encoded_text.strip())
+    print('Pass Phrase:', pass_phrase.strip())
+    print('Decoded Text:', decoded_text)
+
+
+# The line above main is for grading purposes only.
+# DO NOT REMOVE THE LINE ABOVE MAIN
+if __name__ == "__main__":
+     main()
