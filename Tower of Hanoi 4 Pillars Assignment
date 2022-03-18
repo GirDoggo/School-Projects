@@ -1,0 +1,67 @@
+
+#  File: Tower.py
+
+#  Description: This program calculates the steps in the most parsimonious
+#               path in a tower of Hanoi puzzle with 4 pegs and any number of
+#               disks.
+
+#  Student's Name: Peter Zhang
+
+#  Student's UT EID: pxz58
+
+#  Partner's Name: N/A
+
+#  Partner's UT EID: N/A
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 3/4/2022
+
+#  Date Last Modified: 3/5/2022
+
+import sys, math
+
+
+# Input: n the number of disks
+# Output: returns the number of transfers using four needles
+def num_moves(n):
+    if n == 1 or n == 0:
+        return n
+    tot = 0
+
+    a = 2 * n + 1
+    k = round(n - math.sqrt(a) + 1)
+    # move k disks from the top to spare 1.
+    x = num_moves(k)
+    tot += x
+
+    # move the remaining discs except the bottom to spare 2. A different
+    # formula is used because there are now only 3 pegs available for
+    # unstacking the rest of the disks minus the base disk.
+    y = 2 ** (n - k - 1) - 1
+    tot += y
+
+    # move the largest disk to another peg.
+    tot += 1
+
+    # move the disks from spare 2 to the peg with the largest disc.
+    tot += y
+
+    # move the disks from spare 1 to the peg with the other discs.
+    tot += x
+
+    return tot
+
+
+def main():
+    # read number of disks and print number of moves
+    for line in sys.stdin:
+        line = line.strip()
+        num_disks = int(line)
+        print(num_moves(num_disks))
+
+
+if __name__ == "__main__":
+    main()
