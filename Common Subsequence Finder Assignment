@@ -1,0 +1,92 @@
+#  File: DNA.py
+
+#  Description: This program finds the longest common sequences in any number
+#               of pairs of strings and displays these sequences.
+
+
+#  Student Name: Peter Zhang
+
+#  Student UT EID: pxz58
+
+#  Partner Name: N/A
+
+#  Partner UT EID: N/A
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 1/22/2022
+
+#  Date Last Modified: 1/23/2022
+
+import sys
+
+# Input: s1 and s2 are two strings that represent strands of DNA
+# Output: returns a sorted list of substrings that are the longest
+#         common subsequence. The list is empty if there are no
+#         common subsequences.
+
+
+def longest_subsequence(s1, s2):
+    commonStr = []
+    for i in range(len(s1)):
+        j = i+1
+        while j <= len(s1):
+            if s1[i:j] in s2:
+                if s1[i:j] not in commonStr:
+                    commonStr.append(s1[i:j])
+            else:
+                break
+            j += 1
+    max_len = 0
+    for ele in commonStr:
+        if len(ele) > max_len:
+            max_len = len(ele)
+
+    responses = []
+    for ele in commonStr:
+        if len(ele) == max_len:
+            responses.append(ele)
+
+    responses.sort()
+    return responses
+
+
+def main():
+    longest = []
+
+    num_pairs = sys.stdin.readline()
+    num_pairs = num_pairs.strip()
+    num_pairs = int(num_pairs)
+
+    for i in range(num_pairs):
+        st1 = sys.stdin.readline()
+        st2 = sys.stdin.readline()
+
+        st1 = st1.strip()
+        st2 = st2.strip()
+
+        st1 = st1.upper()
+        st2 = st2.upper()
+        longest_sequences = longest_subsequence(st1, st2)
+        longest.append(longest_sequences)
+    for item in longest:
+        if item:
+            for i in item:
+                print(i)
+        else:
+            print('No Common Sequence Found')
+        print()
+
+
+def test_cases():
+    assert longest_subsequence('', '') == []
+    assert longest_subsequence('gAcc', 'GaCC') == []
+    assert longest_subsequence('GAABCD', 'GAABCD') == ['GAABCD']
+    assert longest_subsequence('GBDFGHUHJYUI1332', 'FGH9JYUGBDI332') == ['332', 'FGH', 'GBD', 'JYU']
+    assert longest_subsequence('Gaoh Ryuki', 'h R yuk') == ['h R', 'yuk']
+    assert longest_subsequence('TTTGGGAAATTT', 'TTTAGGGTTT') == ['GGG', 'TTT']
+
+if __name__ == "__main__":
+    main()
