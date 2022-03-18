@@ -1,0 +1,152 @@
+#  File: Intervals.py
+
+#  Description: This program merges any number of consecutive intervals of
+#               integers into the intervals of integers with
+#               the longest ranges.
+
+#  Student Name: Peter Zhang
+
+#  Student UT EID: pxz58
+
+#  Partner Name: N/A
+
+#  Partner UT EID: N/A
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 1/29/2022
+
+#  Date Last Modified: 1/30/2022
+
+import sys
+
+
+#        compare_end is the ending integer value for the first tuple
+#        base_start is the starting integer value for the second tuple
+#        base_end is the starting integer value for the second tuple
+# Output: a boolean of whether or not there is overlap between the two tuples
+#           being compared
+def overlap(compare_start, compare_end, base_start, base_end):
+    if (compare_start == base_start) and (compare_end == base_end):
+        return False
+    if (compare_end < base_start) or (base_end < compare_start):
+        return False
+    if(compare_start > base_end) or (base_start > compare_end):
+        return False
+    else:
+        return True
+
+
+# Input: compare_start is the starting integer value for the first tuple
+#        compare_end is the ending integer value for the first tuple
+#        base_start is the starting integer value for the second tuple
+#        base_end is the starting integer value for the second tuple
+# Output: a merged tuple created from the smallest value and the largest value
+#           between the two compared and overlapping tuples
+def create_merge(compare_start, compare_end, base_start, base_end):
+    new_list = [compare_start, compare_end, base_start, base_end]
+    smallest = compare_start
+    largest = compare_end
+    for element in new_list:
+        if element <= smallest:
+            smallest = element
+        if element >= largest:
+            largest = element
+    merged = (smallest, largest)
+
+    return merged
+
+
+# Input: tuple_list is an unsorted list of tuples denoting intervals
+# Output: a boolean of whether or not the tuple list has mergeable elements
+def canbe_merged(tuple_list):
+    tmp_list = tuple_list.copy()
+    if len(tuple_list) == 1:
+        return False
+    for e1 in tuple_list:
+        tmp_list.pop(0)
+        for e2 in tmp_list:
+            if overlap(e1[0], e1[1], e2[0], e2[1]):
+                return True
+    return False
+
+
+# Input: tuples_list is an unsorted list of tuples denoting intervals
+# Output: a list of merged tuples sorted by the lower number of the
+#         interval
+def merge_tuples(tuple_list):
+    if not canbe_merged(tuple_list):
+        return tuple_list
+    tmp_list = tuple_list.copy()
+    merged_list = []
+    for e1 in tuple_list:
+        if len(tmp_list) == 0:
+            break
+        found_merge = 0
+
+        for e2 in tmp_list:
+            if overlap(e1[0], e1[1], e2[0], e2[1]):
+                merged_tuple = create_merge(e1[0], e1[1], e2[0], e2[1])
+                found_merge = 1
+
+                if merged_tuple not in merged_list:
+                    merged_list.append(merged_tuple)
+
+        if (e1 not in merged_list) and (found_merge == 0):
+            merged_list.append(e1)
+
+    if canbe_merged(merged_list):
+        merged_list.sort()
+        return merge_tuples(merged_list)
+    else:
+        merged_list.sort()
+        return merged_list
+
+
+# Input: tuples_list is a list of tuples of denoting intervals
+# Output: a list of tuples sorted by ascending order of the size of
+#         the interval
+#         if two intervals have the size then it will sort by the
+#         lower number in the interval
+def sort_by_interval_size(tuples_list):
+    sorted_list = tuples_list.copy()
+
+    for i in range(len(sorted_list)):
+        for j in range(len(sorted_list) - 1):
+            if (sorted_list[j][1] - sorted_list[j][0]) > \
+                    (sorted_list[j + 1][1] - sorted_list[j + 1][0]):
+                temp = sorted_list[j]
+                sorted_list[j] = sorted_list[j + 1]
+                sorted_list[j + 1] = temp
+
+    return sorted_list
+
+
+def main():
+    # read the input data and create a list of tuples
+    interval_num = int(sys.stdin.readline())
+    tuples_list = []
+    for i in range(interval_num):
+        line = sys.stdin.readline().strip()
+        line = line.split()
+        line_tuple = (int(line[0]), int(line[1]))
+        tuples_list.append(line_tuple)
+
+    # merge the list of tuples
+    merged_tuples = merge_tuples(tuples_list)
+
+    # print the merged list
+    print(merged_tuples)
+
+    # sort the list of tuples according to the size of the interval
+
+    sorted_list = sort_by_interval_size(merged_tuples)
+    # print the sorted list
+    print(sorted_list)
+
+
+if __name__ == "__main__":
+
+    main()
