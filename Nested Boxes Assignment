@@ -1,0 +1,120 @@
+#  File: Boxes.py
+
+#  Description: This program finds the largest number of boxes that can nest
+#               inside each other and how many combinations will yield that
+#               many nested boxes given a list of boxes.
+
+#  Student Name: Peter Zhang
+
+#  Student UT EID: pxz58
+
+#  Partner Name: N/A
+
+#  Partner UT EID: N/A
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 3/10/2022
+
+#  Date Last Modified: 3/11/2022
+
+import sys
+
+
+def nesting_boxes_helper(box_list, compare, num, temp, iteration=0):
+    for j in range (len(box_list), 0, -1):
+        if does_fit(box_list[j-1], compare):
+            temp.append(box_list[j-1])
+            nesting_boxes_helper(box_list[:j], box_list[j-1], num, temp, iteration + 1)
+
+    copy = temp[:]
+    num.append(copy)
+    temp.pop(-1)
+
+    return
+
+
+# Input: 2-D list of boxes. Each box of three dimensions is sorted
+#        box_list is sorted
+# Output: function returns two numbers, the maximum number of boxes
+#         that fit inside each other and the number of such nesting
+#         sets of boxes
+def nesting_boxes (box_list):
+    num = []
+    nested = []
+    length_list = []
+    answer_list = []
+
+    # this for loop finds each possible combination of nested boxes and puts
+    # them in a list.
+    for i in range (len(box_list) - 1, 1, -1):
+        temp = [box_list[i]]
+        nesting_boxes_helper(box_list, box_list[i], num, temp)
+        # this for loop appends the num list containing the nested boxes in the
+        # box at index i, which was tested, to the nested list. It also appends
+        # the lengths to a length list in order to use later.
+        for item in num:
+            length_list.append(len(item))
+            nested.append(item)
+        num = []
+
+    # using the list of all possible nested combinations of boxes, find the
+    # number of sets equal to the largest length
+    largest = max(length_list)
+    for item in nested:
+        if len(item) == largest:
+            answer_list.append(item)
+
+    return largest, len(answer_list)
+
+
+# returns True if box1 fits inside box2
+def does_fit (box1, box2):
+    return (box1[0] < box2[0]) and (box1[1] < box2[1]) and (box1[2] < box2[2])
+
+
+def main():
+    # read the number of boxes
+    line = sys.stdin.readline()
+    line = line.strip()
+    num_boxes = int (line)
+
+    # create an empty list for the boxes
+    box_list = []
+
+    # read the boxes from the file
+    for i in range (num_boxes):
+        line = sys.stdin.readline()
+        line = line.strip()
+        box = line.split()
+        for j in range (len(box)):
+            box[j] = int (box[j])
+        box.sort()
+        box_list.append (box)
+
+    # print to make sure that the input was read in correctly
+    # print (box_list)
+    # print()
+
+    # sort the box list
+    box_list.sort()
+
+    # print the box_list to see if it has been sorted.
+    # print (box_list)
+    # print()
+
+    # get the maximum number of nesting boxes and the
+    # number of sets that have that maximum number of boxes
+    max_boxes, num_sets = nesting_boxes (box_list)
+
+    # print the largest number of boxes that fit
+    print (max_boxes)
+
+    # print the number of sets of such boxes
+    print (num_sets)
+
+
+if __name__ == "__main__":
+    main()
