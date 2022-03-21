@@ -4,6 +4,9 @@
 #  Student UT EID: pxz58
 #  Course Name: CS 313E
 #  Unique Number: 51120
+
+# This function was written for an exam.
+
 # Prints the board. Useful for debugging. DO NOT MODIFY THIS METHOD
 def print_board(temp):
     for row in temp:
