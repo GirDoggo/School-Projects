@@ -1,0 +1,346 @@
+#  File: TestLinkedList.py
+
+#  Description: This program includes a linked list data structure built on
+#               the LinkedList class and Link class. The object includes a
+#               variety of functions, including sorting, insertion and deletion
+
+#  Student Name: Peter Zhang
+
+#  Student UT EID: pxz58
+
+#  Partner Name: N/A
+
+#  Partner UT EID: N/A
+
+#  Course Name: CS 313E
+
+#  Unique Number: 51120
+
+#  Date Created: 4/1/2022
+
+#  Date Last Modified: 4/3/2022
+
+import math
+
+
+class Link (object):
+    def __init__(self, data, next=None):
+        self.data = data
+        self.next = next
+
+
+class LinkedList (object):
+    # create a linked list
+    # you may add other attributes
+    def __init__ (self):
+        self.first = None
+        self.length = 0
+
+    # get number of links
+    def get_num_links (self):
+        return self.length
+
+    # add an item at the beginning of the list
+    def insert_first (self, data):
+        new_link = Link(data)
+        new_link.next = self.first
+        self.first = new_link
+        self.length += 1
+
+    # add an item at the end of a list
+    def insert_last (self, data):
+        new_link = Link(data)
+        last = self.first
+        if self.length == 0:
+            self.first = new_link
+
+        for i in range(self.length):
+            if last.next is None:
+                last.next = new_link
+            last = last.next
+        self.length += 1
+
+    # add an item in an ordered list in ascending order
+    # assume that the list is already sorted
+    def insert_in_order (self, data):
+        if self.length == 0:
+            self.insert_first(data)
+            return
+        elif self.length == 1:
+            if data > self.first.data:
+                self.insert_last(data)
+                return
+            else:
+                self.insert_first(data)
+                return
+
+        if data <= self.first.data:
+            self.insert_first(data)
+            return
+
+        curr = self.first
+        while curr.next is not None:
+            if curr.next.data >= data >= curr.data:
+                new_link = Link(data)
+                new_link.next = curr.next
+                curr.next = new_link
+                self.length += 1
+                return
+            curr = curr.next
+
+        if data >= curr.data:
+            self.insert_last(data)
+            return
+
+    # Search in an ordered list, return None if not found
+    def find_unordered (self, data):
+        curr = self.first
+        while curr is not None:
+            if data == curr.data:
+                return curr.data
+            curr = curr.next
+
+        return None
+
+    # Search in an ordered list, return None if not found
+    def find_ordered (self, data):
+        curr = self.first
+        while curr is not None:
+            if data == curr.data:
+                return curr.data
+            if data > curr.data:
+                return None
+            curr = curr.next
+
+        return None
+
+    # Delete and return the first occurrence of a Link containing data
+    # from an unordered list or None if not found
+    def delete_link (self, data):
+        curr = self.first
+        previous = self.first
+
+        # checks if the linked list is empty
+        if previous is None:
+            return None
+
+        # checks if the match occurs in the first link
+        if curr.data == data:
+            self.length -= 1
+            self.first = curr.next
+            return curr.data
+
+        # iterates through the linked list to check for the match
+        curr = curr.next
+        while curr is not None:
+            if data == curr.data:
+                previous.next = curr.next
+                self.length -= 1
+                return curr.data
+            previous = curr
+            curr = curr.next
+
+        return None
+
+    # String representation of data 10 items to a line, 2 spaces between data
+    def __str__ (self):
+        string = ''
+        curr = self.first
+        for e in range(math.ceil(self.length / 10)):
+            for i in range(10):
+                string += str(curr.data) + '  '
+                curr = curr.next
+                if curr is None:
+                    return string
+            string += '\n'
+
+        return ''
+
+    # Copy the contents of a list and return new list
+    # do not change the original list
+    def copy_list (self):
+        new_list = LinkedList()
+        curr = self.first
+        while curr is not None:
+            new_list.insert_last(curr.data)
+            curr = curr.next
+        return new_list
+
+    # Reverse the contents of a list and return new list
+    # do not change the original list
+    def reverse_list (self):
+        new_list = LinkedList()
+        curr = self.first
+        while curr is not None:
+            new_list.insert_first(curr.data)
+            curr = curr.next
+        return new_list
+
+    # Sort the contents of a list in ascending order and return new list
+    # do not change the original list
+    def sort_list (self):
+        if self.length == 0:
+            return None
+        new_list = LinkedList()
+        new_list.insert_first(self.first.data)
+        curr = self.first.next
+
+        while curr is not None:
+            new_list.insert_in_order(curr.data)
+            curr = curr.next
+
+        return new_list
+
+    # Return True if a list is sorted in ascending order or False otherwise
+    def is_sorted (self):
+        curr = self.first.next
+        previous = self.first
+        while curr is not None:
+            if curr.data < previous.data:
+                return False
+            previous = curr
+            curr = curr.next
+
+        return True
+
+    # Return True if a list is empty or False otherwise
+    def is_empty (self):
+        return self.length == 0
+
+    # Merge two sorted lists and return new list in ascending order
+    # do not change the original lists
+    def merge_list (self, other):
+        list1 = self.copy_list()
+        list2 = other.copy_list()
+
+        # iterate to the end of the first linked list
+        curr = list1.first
+        for i in range(list1.length - 1):
+            curr = curr.next
+
+        curr.next = list2.first
+        copy = list1.copy_list()
+
+        return copy.sort_list()
+
+    # Test if two lists are equal, item by item and return True
+    def is_equal (self, other):
+        # tests if one list is empty
+        if self.length == 0:
+            if other.length == 0:
+                return True
+            else:
+                return False
+
+        curr = self.first
+        compare = other.first
+        # i variable is used to count how many matches were found.
+        i = 0
+        while i < self.length:
+            i += 1
+            if (curr is not None) and (compare is not None):
+                if curr.data == compare.data:
+                    curr = curr.next
+                    compare = compare.next
+                else:
+                    break
+            else:
+                break
+
+        # if number of matches matches the length of the linked list, we return
+        # true.
+        if i == self.length:
+            return True
+        else:
+            return False
+
+    # Return a new list, keeping only the first occurence of an element
+    # and removing all duplicates. Do not change the order of the elements.
+    # do not change the original list
+    def remove_duplicates (self):
+        temp = []
+        curr = self.first
+        while curr is not None:
+            if curr.data not in temp:
+                temp.append(curr.data)
+            curr = curr.next
+
+        new_list = LinkedList()
+        for item in temp:
+            new_list.insert_last(item)
+
+        return new_list
+
+
+def main():
+    # Test methods insert_first() and __str__() by adding more than
+    # 10 items to a list and printing it.
+    list1 = LinkedList()
+    for i in range(10):
+        list1.insert_first(i)
+    print(list1)
+
+    # Test method insert_last()
+    list1.insert_last(7)
+    print(list1)
+
+    # Test method insert_in_order()
+    list1.insert_in_order(8)
+    print(list1)
+
+    # Test method get_num_links()
+    # print(list1.get_num_links())
+    #
+    # # Test method find_unordered()
+    # # Consider two cases - data is there, data is not there
+    # null_list = LinkedList()
+    # print(null_list.find_unordered(4))
+    # print(list1.find_unordered(4))
+    #
+    # # Test method find_ordered()
+    # # Consider two cases - data is there, data is not there
+    # print(null_list.find_ordered(4))
+    # print(list1.find_ordered(4))
+    #
+    # # Test method delete_link()
+    # # Consider two cases - data is there, data is not there
+    # list1.delete_link(1)
+    # null_list.delete_link(1)
+    #
+    # # Test method copy_list()
+    # copy = list1.copy_list()
+    #
+    # # Test method reverse_list()
+    # reverse = copy.reverse_list()
+    #
+    # # Test method sort_list()
+    # list1.sort_list()
+    #
+    # # Test method is_sorted()
+    # # Consider two cases - list is sorted, list is not sorted
+    # list2 = LinkedList()
+    # list2.insert_last(2)
+    # list2.insert_last(1)
+    # print(list1.is_sorted())
+    # print(null_list.is_sorted())
+    # print(list2.is_sorted())
+    #
+    # # Test method is_empty()
+    # print(null_list.is_empty())
+    # print(list2.is_empty())
+    #
+    # # Test method merge_list()
+    # print(list1.merge_list(reverse))
+    #
+    # # Test method is_equal()
+    # # Consider two cases - lists are equal, lists are not equal
+    # print(list1.is_equal(reverse))
+    # copy = reverse.copy_list()
+    # print(reverse.is_equal(copy))
+    #
+    # # Test remove_duplicates()
+    # list1.remove_duplicates()
+
+
+if __name__ == "__main__":
+    main()
